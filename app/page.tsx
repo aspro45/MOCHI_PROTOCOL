@@ -32,6 +32,8 @@ type UnityCreateConfig = {
   companyName: string;
   productName: string;
   productVersion: string;
+  devicePixelRatio?: number;
+  matchWebGLToCanvasSize?: boolean;
 };
 
 type StatBlock = {
@@ -506,6 +508,9 @@ export default function GamePage() {
       getUnityInstance()?.SetFullscreen?.(fullscreen ? 1 : 0);
 
       window.requestAnimationFrame(() => {
+        if (canvasRef.current) {
+          syncUnityCanvasResolution(canvasRef.current);
+        }
         window.dispatchEvent(new Event('resize'));
         canvasRef.current?.focus();
       });
@@ -533,6 +538,9 @@ export default function GamePage() {
       }
 
       await frame.requestFullscreen();
+      if (canvasRef.current) {
+        syncUnityCanvasResolution(canvasRef.current);
+      }
       canvasRef.current?.focus();
       window.dispatchEvent(new Event('resize'));
     } catch (error) {
@@ -655,8 +663,11 @@ export default function GamePage() {
         }
 
         try {
+          const activeCanvas = canvasRef.current;
+          syncUnityCanvasResolution(activeCanvas);
+
           const instance = await window.createUnityInstance(
-            canvasRef.current,
+            activeCanvas,
             {
               dataUrl: withUnityBuildVersion(`${buildBase}/${unityBuildName}.data`),
               frameworkUrl: withUnityBuildVersion(`${buildBase}/${unityBuildName}.framework.js`),
@@ -665,6 +676,8 @@ export default function GamePage() {
               companyName: 'Mochi Protocol',
               productName: 'Mochi Protocol',
               productVersion: '0.1',
+              devicePixelRatio: getUnityDevicePixelRatio(),
+              matchWebGLToCanvasSize: true,
             },
             (progress) => setUnityProgress(progress),
           );
@@ -1093,6 +1106,36 @@ function uniqueUnityBuildBases(values: string[]) {
 function withUnityBuildVersion(url: string) {
   const separator = url.includes('?') ? '&' : '?';
   return `${url}${separator}v=${encodeURIComponent(unityBuildVersion)}`;
+}
+
+function getUnityDevicePixelRatio() {
+  if (typeof window === 'undefined') {
+    return 1;
+  }
+
+  return Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+}
+
+function syncUnityCanvasResolution(canvas: HTMLCanvasElement) {
+  const bounds = canvas.getBoundingClientRect();
+  if (bounds.width <= 0 || bounds.height <= 0) {
+    return;
+  }
+
+  const pixelRatio = getUnityDevicePixelRatio();
+  let targetWidth = Math.round(bounds.width * pixelRatio);
+  let targetHeight = Math.round(bounds.height * pixelRatio);
+  const maxWidth = 2560;
+  const maxHeight = 1440;
+  const downscale = Math.min(1, maxWidth / targetWidth, maxHeight / targetHeight);
+
+  targetWidth = Math.max(1280, Math.round(targetWidth * downscale));
+  targetHeight = Math.max(720, Math.round(targetHeight * downscale));
+
+  if (Math.abs(canvas.width - targetWidth) > 2 || Math.abs(canvas.height - targetHeight) > 2) {
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+  }
 }
 
 function unityStatusTitle(status: UnityLoaderStatus) {
