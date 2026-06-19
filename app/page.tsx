@@ -73,8 +73,15 @@ declare global {
   }
 }
 
-const unityBuildBase = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_BUILD_BASE || 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/Build');
-const unityStreamingAssetsUrl = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE || 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/StreamingAssets');
+const defaultUnityBuildBase = 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/Build';
+const defaultUnityStreamingAssetsUrl = 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/StreamingAssets';
+const configuredUnityBuildBase = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_BUILD_BASE || defaultUnityBuildBase);
+const unityBuildBaseCandidates = uniqueUnityBuildBases([
+  configuredUnityBuildBase,
+  defaultUnityBuildBase,
+  '/unity/Build',
+]);
+const unityStreamingAssetsUrl = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE || defaultUnityStreamingAssetsUrl);
 const unityBuildName = process.env.NEXT_PUBLIC_UNITY_BUILD_NAME || 'MochiProtocol';
 const unityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION || 'premium-2048-source-20260619-01';
 const connectionTimeoutMs = 45000;
@@ -150,6 +157,7 @@ export default function GamePage() {
   const { openConnectModal } = useConnectModal();
   const [unityStatus, setUnityStatus] = useState<UnityLoaderStatus>('idle');
   const [unityProgress, setUnityProgress] = useState(0);
+  const [unityTriedBuildUrls, setUnityTriedBuildUrls] = useState<string[]>([]);
   const [, setBridgeStatus] = useState('Onchain bridge ready.');
   const [leaderboardWeekId, setLeaderboardWeekId] = useState(defaultLeaderboardWeekId);
   const [leaderboardEntries, setLeaderboardEntries] = useState<WeeklyLeaderboardEntry[]>([]);
@@ -543,6 +551,7 @@ export default function GamePage() {
     }
 
     setUnityProgress(0);
+    setUnityTriedBuildUrls([]);
     setUnityStatus('idle');
     setUnityRequested(true);
     setBridgeStatus('Starting Mochi Protocol...');
@@ -594,7 +603,28 @@ export default function GamePage() {
 
   useEffect(() => {
     let cancelled = false;
-    let scriptElement: HTMLScriptElement | null = null;
+    const scriptElements: HTMLScriptElement[] = [];
+
+    function removeUnityScript(script: HTMLScriptElement) {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    }
+
+    function loadUnityLoaderScript(loaderUrl: string) {
+      return new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = loaderUrl;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => {
+          removeUnityScript(script);
+          reject(new Error(`Unity loader not found at ${loaderUrl}`));
+        };
+        scriptElements.push(script);
+        document.body.appendChild(script);
+      });
+    }
 
     async function loadUnity() {
       if (!unityRequested || !canvasRef.current || unityStatus !== 'idle') {
@@ -603,13 +633,23 @@ export default function GamePage() {
 
       setUnityStatus('loading');
 
-      const loaderUrl = withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.loader.js`);
+      const attemptedUrls: string[] = [];
+      for (const buildBase of unityBuildBaseCandidates) {
+        if (cancelled) {
+          return;
+        }
 
-      scriptElement = document.createElement('script');
-      scriptElement.src = loaderUrl;
-      scriptElement.async = true;
+        const loaderUrl = withUnityBuildVersion(`${buildBase}/${unityBuildName}.loader.js`);
+        attemptedUrls.push(loaderUrl);
+        setUnityTriedBuildUrls([...attemptedUrls]);
 
-      scriptElement.onload = async () => {
+        try {
+          await loadUnityLoaderScript(loaderUrl);
+        } catch (error) {
+          console.warn(error);
+          continue;
+        }
+
         if (cancelled || !canvasRef.current || !window.createUnityInstance) {
           return;
         }
@@ -618,9 +658,9 @@ export default function GamePage() {
           const instance = await window.createUnityInstance(
             canvasRef.current,
             {
-              dataUrl: withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.data`),
-              frameworkUrl: withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.framework.js`),
-              codeUrl: withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.wasm`),
+              dataUrl: withUnityBuildVersion(`${buildBase}/${unityBuildName}.data`),
+              frameworkUrl: withUnityBuildVersion(`${buildBase}/${unityBuildName}.framework.js`),
+              codeUrl: withUnityBuildVersion(`${buildBase}/${unityBuildName}.wasm`),
               streamingAssetsUrl: unityStreamingAssetsUrl,
               companyName: 'Mochi Protocol',
               productName: 'Mochi Protocol',
@@ -640,29 +680,27 @@ export default function GamePage() {
           if (latestAddressRef.current) {
             sendToUnity('OnWalletConnected', latestAddressRef.current);
           }
+          return;
         } catch (error) {
           setUnityStatus('failed');
           setUnityRequested(false);
           sendUnityError(error);
+          return;
         }
-      };
+      }
 
-      scriptElement.onerror = () => {
-        if (!cancelled) {
-          setUnityStatus('missing');
-          setUnityRequested(false);
-        }
-      };
-
-      document.body.appendChild(scriptElement);
+      if (!cancelled) {
+        setUnityStatus('missing');
+        setUnityRequested(false);
+      }
     }
 
     loadUnity();
 
     return () => {
       cancelled = true;
-      if (scriptElement?.parentNode) {
-        scriptElement.parentNode.removeChild(scriptElement);
+      for (const script of scriptElements) {
+        removeUnityScript(script);
       }
       setUnityInstance(null);
     };
@@ -743,7 +781,7 @@ export default function GamePage() {
             <div className="unity-message">
               <div className="unity-message-inner">
                 <h2>{unityStatusTitle(unityStatus)}</h2>
-                <p>{unityStatusMessage(unityStatus, unityBuildName, unityProgress)}</p>
+                <p>{unityStatusMessage(unityStatus, unityBuildName, unityProgress, unityTriedBuildUrls)}</p>
                 {unityStatus === 'idle' || unityStatus === 'missing' || unityStatus === 'failed' ? (
                   <button className="start-game-button" type="button" onClick={startUnityGame}>
                     {unityStatus === 'idle' ? 'START GAME' : 'TRY AGAIN'}
@@ -1045,7 +1083,11 @@ export default function GamePage() {
 }
 
 function normalizeUnityBuildBase(value: string) {
-  return value.replace(/\/+$/, '');
+  return value.trim().replace(/\/+$/, '');
+}
+
+function uniqueUnityBuildBases(values: string[]) {
+  return values.map(normalizeUnityBuildBase).filter((value, index, all) => value.length > 0 && all.indexOf(value) === index);
 }
 
 function withUnityBuildVersion(url: string) {
@@ -1069,13 +1111,20 @@ function unityStatusTitle(status: UnityLoaderStatus) {
   return 'READY TO START';
 }
 
-function unityStatusMessage(status: UnityLoaderStatus, buildName: string, progress: number) {
+function unityStatusMessage(status: UnityLoaderStatus, buildName: string, progress: number, attemptedUrls: string[] = []) {
+  const latestAttempt = attemptedUrls[attemptedUrls.length - 1];
+
   if (status === 'loading') {
-    return `Loading WebGL build ${Math.round(progress * 100)}%.`;
+    return latestAttempt
+      ? `Loading WebGL build ${Math.round(progress * 100)}% from ${stripUnityVersionForDisplay(latestAttempt)}.`
+      : `Loading WebGL build ${Math.round(progress * 100)}%.`;
   }
 
   if (status === 'missing') {
-    return `Unity build is not available at the configured Build URL. Expected ${buildName}.loader.js, ${buildName}.data, ${buildName}.framework.js, and ${buildName}.wasm. Set NEXT_PUBLIC_UNITY_BUILD_BASE to the hosted Build folder, or keep the files in public/unity/Build for local fallback.`;
+    const attempted = attemptedUrls.length > 0
+      ? ` Tried: ${attemptedUrls.map(stripUnityVersionForDisplay).join(' | ')}`
+      : '';
+    return `Unity build is not available at any configured Build URL. Expected ${buildName}.loader.js, ${buildName}.data, ${buildName}.framework.js, and ${buildName}.wasm.${attempted}`;
   }
 
   if (status === 'failed') {
@@ -1083,6 +1132,10 @@ function unityStatusMessage(status: UnityLoaderStatus, buildName: string, progre
   }
 
   return 'Press START GAME when you want to load the Unity demo. Wallet stays optional.';
+}
+
+function stripUnityVersionForDisplay(url: string) {
+  return url.replace(/[?&]v=[^&]+/, '');
 }
 
 function shortAddress(address: string) {
