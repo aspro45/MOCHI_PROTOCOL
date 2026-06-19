@@ -1,4 +1,4 @@
-# Mochi Protocol Web Wrapper
+﻿# Mochi Protocol Web Wrapper
 
 React / Next.js wrapper for the Unity WebGL game.
 
@@ -77,15 +77,17 @@ MochiProtocol.framework.js
 MochiProtocol.wasm
 ```
 
-You can override the base name with:
+For high-quality hosting, upload the generated Unity WebGL folder to a CDN/R2 bucket and point the wrapper at that hosted Build folder. You can override the base URL, StreamingAssets URL, and base name with:
 
 ```text
+NEXT_PUBLIC_UNITY_BUILD_BASE=https://cdn.example.com/mochi/Build
+NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE=https://cdn.example.com/mochi/StreamingAssets
 NEXT_PUBLIC_UNITY_BUILD_NAME=YourBuildName
 ```
 
 For the public GitHub repository, Unity WebGL build files are intentionally excluded because
 `MochiProtocol.data` is larger than GitHub/Vercel's direct file limits. Host the generated
-Unity build separately, or set `NEXT_PUBLIC_UNITY_BUILD_BASE` to the hosted build URL in Vercel.
+Unity build separately, then set `NEXT_PUBLIC_UNITY_BUILD_BASE` to the hosted `Build` folder URL in Vercel. Keep CORS enabled for `GET` requests so the Unity loader can fetch `.data`, `.framework.js`, and `.wasm` from the website domain.
 
 ## GenLayer Bridge
 
@@ -110,3 +112,7 @@ OnWeeklyRunResult(json)
 OnLeaderboardResult(json)
 OnOnchainError(error)
 ```
+
+
+
+

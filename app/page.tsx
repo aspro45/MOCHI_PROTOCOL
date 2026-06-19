@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
@@ -73,7 +73,8 @@ declare global {
   }
 }
 
-const unityBuildBase = process.env.NEXT_PUBLIC_UNITY_BUILD_BASE || '/unity/Build';
+const unityBuildBase = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_BUILD_BASE || '/unity/Build');
+const unityStreamingAssetsUrl = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE || '/unity/StreamingAssets');
 const unityBuildName = process.env.NEXT_PUBLIC_UNITY_BUILD_NAME || 'MochiProtocol';
 const unityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION || 'completion-status-layout-20260618-01';
 const connectionTimeoutMs = 45000;
@@ -603,12 +604,6 @@ export default function GamePage() {
       setUnityStatus('loading');
 
       const loaderUrl = withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.loader.js`);
-      const loaderAvailable = await checkAsset(loaderUrl);
-      if (!loaderAvailable) {
-        setUnityStatus('missing');
-        setUnityRequested(false);
-        return;
-      }
 
       scriptElement = document.createElement('script');
       scriptElement.src = loaderUrl;
@@ -626,7 +621,7 @@ export default function GamePage() {
               dataUrl: withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.data`),
               frameworkUrl: withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.framework.js`),
               codeUrl: withUnityBuildVersion(`${unityBuildBase}/${unityBuildName}.wasm`),
-              streamingAssetsUrl: '/unity/StreamingAssets',
+              streamingAssetsUrl: unityStreamingAssetsUrl,
               companyName: 'Mochi Protocol',
               productName: 'Mochi Protocol',
               productVersion: '0.1',
@@ -654,7 +649,7 @@ export default function GamePage() {
 
       scriptElement.onerror = () => {
         if (!cancelled) {
-          setUnityStatus('failed');
+          setUnityStatus('missing');
           setUnityRequested(false);
         }
       };
@@ -1049,17 +1044,13 @@ export default function GamePage() {
   );
 }
 
-function withUnityBuildVersion(url: string) {
-  return `${url}?v=${encodeURIComponent(unityBuildVersion)}`;
+function normalizeUnityBuildBase(value: string) {
+  return value.replace(/\/+$/, '');
 }
 
-async function checkAsset(url: string) {
-  try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
-  } catch {
-    return false;
-  }
+function withUnityBuildVersion(url: string) {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${encodeURIComponent(unityBuildVersion)}`;
 }
 
 function unityStatusTitle(status: UnityLoaderStatus) {
@@ -1084,7 +1075,7 @@ function unityStatusMessage(status: UnityLoaderStatus, buildName: string, progre
   }
 
   if (status === 'missing') {
-    return `Put the Unity WebGL files in public/unity/Build using the base name ${buildName}: ${buildName}.loader.js, ${buildName}.data, ${buildName}.framework.js, and ${buildName}.wasm. Wallet and GenLayer bridge testing still works without the build.`;
+    return `Unity build is not available at the configured Build URL. Expected ${buildName}.loader.js, ${buildName}.data, ${buildName}.framework.js, and ${buildName}.wasm. Set NEXT_PUBLIC_UNITY_BUILD_BASE to the hosted Build folder, or keep the files in public/unity/Build for local fallback.`;
   }
 
   if (status === 'failed') {
@@ -1246,3 +1237,7 @@ function errorMessage(error: unknown) {
     return String(error);
   }
 }
+
+
+
+
