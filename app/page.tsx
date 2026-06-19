@@ -76,7 +76,7 @@ declare global {
 const unityBuildBase = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_BUILD_BASE || 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/Build');
 const unityStreamingAssetsUrl = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE || 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/StreamingAssets');
 const unityBuildName = process.env.NEXT_PUBLIC_UNITY_BUILD_NAME || 'MochiProtocol';
-const unityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION || 'completion-status-layout-20260618-01';
+const unityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION || 'premium-2048-source-20260619-01';
 const connectionTimeoutMs = 45000;
 const endGameFlowObjectName = 'Mochi_EndGameFlow';
 const leaderboardDisplayNameStorageKey = 'mochiProtocol.leaderboardDisplayName';
@@ -1237,6 +1237,7 @@ function errorMessage(error: unknown) {
     return String(error);
   }
 }
+
 
 
 
