@@ -85,7 +85,11 @@ const unityBuildBaseCandidates = uniqueUnityBuildBases([
 ]);
 const unityStreamingAssetsUrl = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE || defaultUnityStreamingAssetsUrl);
 const unityBuildName = process.env.NEXT_PUBLIC_UNITY_BUILD_NAME || 'MochiProtocol';
-const unityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION || 'r2-under300-20260620-01';
+const defaultUnityBuildVersion = 'r2-under300-20260620-02';
+const configuredUnityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION?.trim();
+const unityBuildVersion = configuredUnityBuildVersion && configuredUnityBuildVersion !== 'premium-2048-source-20260619-01'
+  ? configuredUnityBuildVersion
+  : defaultUnityBuildVersion;
 const connectionTimeoutMs = 45000;
 const endGameFlowObjectName = 'Mochi_EndGameFlow';
 const leaderboardDisplayNameStorageKey = 'mochiProtocol.leaderboardDisplayName';
@@ -1333,6 +1337,7 @@ function errorMessage(error: unknown) {
     return String(error);
   }
 }
+
 
 
 
