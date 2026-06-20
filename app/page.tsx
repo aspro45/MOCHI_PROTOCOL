@@ -1290,9 +1290,7 @@ function unityStatusMessage(status: UnityLoaderStatus, buildName: string, progre
   const latestAttempt = attemptedUrls[attemptedUrls.length - 1];
 
   if (status === 'loading') {
-    return latestAttempt
-      ? `Loading WebGL build ${Math.round(progress * 100)}% from ${stripUnityVersionForDisplay(latestAttempt)}.`
-      : `Loading WebGL build ${Math.round(progress * 100)}%.`;
+    return `Loading WebGL build ${Math.round(progress * 100)}%.`;
   }
 
   if (status === 'missing') {
