@@ -1,6 +1,6 @@
 # Mochi Protocol
 
-Playable Unity WebGL robot cat Metroidvania with an optional GenLayer Intelligent Contract layer.
+Playable Unity WebGL robot cat Metroidvania with GenLayer Intelligent Contract records.
 
 Mochi is a tiny robot cat guardian inside a fractured Intelligent Layer. The validators stopped agreeing, the Core broke apart, and Mochi enters the Broken Core to restore consensus. Gameplay stays local and fast. GenLayer is used only where judgment matters: story submissions, final restoration decisions, and weekly speedrun eligibility.
 
@@ -52,7 +52,7 @@ Core gameplay is deliberately not onchain:
 - health, energy, damage, and combat
 - room layout and manual map art
 
-The wallet is optional. The player can finish the demo without connecting a wallet.
+Gameplay runs locally. Wallet signing is used for Guardian Oath, Final Decision, and weekly speedrun records.
 
 ## Architecture
 
@@ -120,7 +120,6 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=replace-with-walletconnect-project-id
 NEXT_PUBLIC_UNITY_BUILD_BASE=https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/Build
 NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE=https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/StreamingAssets
 NEXT_PUBLIC_UNITY_BUILD_NAME=MochiProtocol
-NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL=
 NEXT_PUBLIC_GENLAYER_CHAIN=bradbury
 NEXT_PUBLIC_GENLAYER_RPC_URL=https://rpc-bradbury.genlayer.com
 NEXT_PUBLIC_GENLAYER_CHAIN_ID=4221
@@ -128,15 +127,15 @@ NEXT_PUBLIC_MOCHI_ADJUDICATOR_ADDRESS=0x27607E65Ec5B0Db9a87bAfCc816E1C112ff48A41
 NEXT_PUBLIC_GENLAYER_RECEIPT_STATUS=ACCEPTED
 ```
 
-## Demo Video
+## Gameplay Video
 
-The GenLayer section has a 16:9 video slot. Leave `NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL` empty to show the placeholder. When the video is ready, put the `.mp4` or `.webm` file in `public/site/` and set:
+The GenLayer section embeds the public gameplay capture hosted on R2:
 
 ```text
-NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL=/site/mochi-demo.mp4
+https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/site/0323.mp4
 ```
 
-For Vercel, use the same environment variable or commit the public video file if it is small enough for GitHub.
+Keep large media outside GitHub and serve it from R2.
 
 ## Security Notes
 

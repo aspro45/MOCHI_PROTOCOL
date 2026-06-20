@@ -117,8 +117,8 @@ const enableBrowserEndgameDebug = process.env.NODE_ENV !== 'production';
 
 const heroStats: StatBlock[] = [
   { value: 'Unity 2D', label: 'local gameplay' },
-  { value: 'WebGL', label: 'browser demo' },
-  { value: 'GenLayer', label: 'optional onchain layer' },
+  { value: 'WebGL', label: 'browser build' },
+  { value: 'GenLayer', label: 'judgment layer' },
 ];
 
 const controls: ControlHint[] = [
@@ -348,7 +348,7 @@ export default function GamePage() {
     const currentAddress = latestAddressRef.current;
     if (!currentAddress) {
       requestWalletConnection();
-      const error = 'Connect wallet first to submit optional onchain records.';
+      const error = 'Connect wallet first to submit GenLayer records.';
       setBridgeStatus(error);
       sendToUnity('OnOnchainError', error);
       return null;
@@ -843,7 +843,7 @@ export default function GamePage() {
           <img src="/site/mochi-face.png" alt="" />
           <span>
             <strong>MOCHI PROTOCOL</strong>
-            <small>Robot cat Metroidvania demo</small>
+            <small>Robot cat Metroidvania</small>
           </span>
         </a>
 
@@ -868,7 +868,7 @@ export default function GamePage() {
           <p className="hero-kicker">Cute sci-fi robot cat Metroidvania</p>
           <h1>Restore the Core. Reconnect consensus. Survive the Broken Core.</h1>
           <p className="hero-copy">
-            Mochi is a tiny robot cat guardian inside a fractured network. This WebGL build is a playable demo with local gameplay, handcrafted Unity rooms, and optional GenLayer onchain moments.
+            Mochi is a tiny robot cat guardian inside a fractured network. Play the WebGL build, clear handcrafted Unity rooms, and submit verified GenLayer records when the run is complete.
           </p>
           <div className="hero-actions">
             <a className="primary-link" href="#play">Play demo</a>
@@ -892,7 +892,7 @@ export default function GamePage() {
           <span>PLAYABLE BUILD</span>
           <h2>Run the current demo in browser.</h2>
           <p>
-            Wallet is not required. Connect only if you want to submit Guardian Oath, Final Decision, or weekly speedrun records through GenLayer.
+            Gameplay starts instantly. Connect a wallet when you want Guardian Oath, Final Decision, or weekly speedrun records signed through GenLayer.
           </p>
         </div>
 
@@ -983,7 +983,7 @@ export default function GamePage() {
             <div>
               <span>SUBMIT RUN</span>
               <h3>Send a real demo completion to GenLayer.</h3>
-              <p>Wallet is required only for this write transaction. Gameplay still works without connecting.</p>
+              <p>Use browser wallet signing to write a judged speedrun record to the Bradbury contract.</p>
             </div>
 
             <label>
@@ -1071,7 +1071,7 @@ export default function GamePage() {
             Validators stopped agreeing. The Core fractured. Mochi enters the Broken Core to restore consensus, collect the Dash and Double Jump modules, defeat Scrap Hound, defeat Reactor Titan, and bring the network back online.
           </p>
           <p>
-            This demo is still a slice of the full idea. Movement, combat, doors, save stations, traps, enemy data, bosses, and map art are built locally in Unity so the game stays fast.
+            This public build is a focused slice of the full game. Movement, combat, doors, save stations, traps, enemy data, bosses, and map art are built locally in Unity so the game stays responsive.
           </p>
         </article>
 
@@ -1079,12 +1079,12 @@ export default function GamePage() {
           <span>HAND BUILT</span>
           <h2>Built with real Unity work, not a generated map.</h2>
           <p>
-            The rooms are placed manually. Colliders are gameplay truth. Visual art is separate from physics. A lot of the work went into jump feel, trap recovery, boss doors, UI, sound balance, WebGL loading, and the GenLayer bridge.
+            The rooms are placed manually. Colliders are gameplay truth. Visual art is separate from physics. The build includes tuned jump feel, trap recovery, boss doors, UI, sound balance, WebGL loading, and the GenLayer bridge.
           </p>
           <div className="mini-terminal">
             <code>ManualMap_Workspace.unity</code>
             <code>Unity 2D + C#</code>
-            <code>Optional onchain records</code>
+            <code>GenLayer signed records</code>
           </div>
         </article>
       </section>
@@ -1123,10 +1123,10 @@ export default function GamePage() {
 
       <section className="boss-section" aria-label="Boss records">
         <div className="boss-copy">
-          <span>DEMO BOSSES</span>
+          <span>BOSS SIGNALS</span>
           <h2>Scrap Hound and Reactor Titan guard the route to restoration.</h2>
           <p>
-            Boss fights lock the room, test your movement, and feed the enemy journal. Defeat state, keys, and final progress stay local unless you choose to submit an optional onchain record.
+            Boss fights lock the room, test your movement, and feed the enemy journal. Defeat state, keys, and final progress stay local. GenLayer submissions turn finished runs into public signed records.
           </p>
         </div>
         <div className="boss-gallery">
@@ -1148,7 +1148,7 @@ export default function GamePage() {
           <span>GENLAYER TECH</span>
           <h2>Onchain where judgment matters. Local where gameplay must be fast.</h2>
           <p>
-            Mochi Protocol uses GenLayer for optional Intelligent Contract moments. The contract can judge short natural-language submissions and run data, then return structured results like accepted, score, category, title, and reason.
+            Mochi Protocol uses GenLayer for Intelligent Contract decisions. The contract judges natural-language submissions and run data, then returns structured results like accepted, score, category, title, and reason.
           </p>
         </div>
 
@@ -1182,7 +1182,7 @@ export default function GamePage() {
             <span>MOCHI RESTORATION PASSPORT</span>
             <h3>One player path from story oath to ranked run.</h3>
             <p>
-              The passport idea is simple: the game stays playable first, and every onchain submit becomes a readable player proof when the user chooses to sign it.
+              The passport records the player path: story oath, final restoration, and ranked run, each judged by the live Bradbury contract.
             </p>
             <div className="passport-steps">
               {passportSteps.map((step) => (
@@ -1198,31 +1198,24 @@ export default function GamePage() {
           </article>
 
           <article className="demo-video-panel">
-            <span>DEMO VIDEO SLOT</span>
-            {demoVideoSourceUrl ? (
-              <div className="video-embed" aria-label="Mochi Protocol demo video">
-                <video
-                  ref={demoVideoRef}
-                  key={demoVideoSourceUrl}
-                  src={demoVideoSourceUrl}
-                  autoPlay
-                  muted
-                  loop
-                  controls
-                  playsInline
-                  preload="auto"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            ) : (
-              <div className="video-placeholder" aria-label="Reserved space for Mochi Protocol demo video">
-                <strong>16:9 gameplay capture</strong>
-                <p>Drop the trailer or walkthrough here when the video is ready.</p>
-              </div>
-            )}
+            <span>GAMEPLAY TRAILER</span>
+            <div className="video-embed" aria-label="Mochi Protocol gameplay trailer">
+              <video
+                ref={demoVideoRef}
+                key={demoVideoSourceUrl}
+                src={demoVideoSourceUrl}
+                autoPlay
+                muted
+                loop
+                controls
+                playsInline
+                preload="auto"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
             <p>
-              Suggested flow: intro, movement, one trap room, one boss moment, final completion screen, then the GenLayer submit result.
+              Watch movement, combat, traps, boss moments, completion UI, and the GenLayer submit flow in one capture.
             </p>
           </article>
         </div>
@@ -1346,10 +1339,10 @@ function unityStatusMessage(status: UnityLoaderStatus, buildName: string, progre
   }
 
   if (status === 'failed') {
-    return 'The Unity loader reported an error. Wallet and GenLayer bridge testing stays available and gameplay is not blocked.';
+    return 'The Unity loader reported an error. GenLayer wallet tools remain available while the build is checked.';
   }
 
-  return 'Press START GAME when you want to load the Unity demo. Wallet stays optional.';
+  return 'Press START GAME to launch Unity. Connect wallet when submitting GenLayer records.';
 }
 
 function stripUnityVersionForDisplay(url: string) {

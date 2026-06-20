@@ -1010,59 +1010,6 @@ kbd {
   text-align: center;
 }
 
-.video-placeholder {
-  position: relative;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 16 / 9;
-  min-height: 260px;
-  padding: 22px;
-  overflow: hidden;
-  border: 1px solid rgba(53, 241, 255, 0.28);
-  background:
-    linear-gradient(135deg, rgba(53, 241, 255, 0.14), transparent 42%),
-    linear-gradient(315deg, rgba(180, 92, 255, 0.18), transparent 52%),
-    rgba(0, 8, 14, 0.68);
-  text-align: center;
-}
-
-.video-placeholder::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(53, 241, 255, 0.18);
-  pointer-events: none;
-}
-
-.video-placeholder::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 6px);
-}
-
-.video-placeholder strong,
-.video-placeholder p {
-  position: relative;
-  z-index: 1;
-}
-
-.video-placeholder strong {
-  color: var(--cyan);
-  font-family: var(--mono);
-  font-size: 18px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.video-placeholder p {
-  max-width: 340px;
-  margin: 8px 0 0;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
 .video-embed {
   aspect-ratio: 16 / 9;
   min-height: 260px;

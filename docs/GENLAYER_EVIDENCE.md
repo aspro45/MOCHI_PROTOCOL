@@ -31,7 +31,7 @@ The contract demonstrates:
 - achievement flags derived from accepted judgments
 - deterministic validation around nondeterministic LLM output
 
-The contract never controls gameplay. It only adjudicates optional records after local gameplay has already happened.
+The contract never controls gameplay. It adjudicates player-signed records after local gameplay has already happened.
 
 ## Onchain Flows
 
@@ -168,8 +168,8 @@ OnOnchainError(error)
 
 Mochi Protocol combines a real Unity 2D demo with a GenLayer adjudication layer:
 
-- The game is playable without a wallet.
-- The onchain layer is optional and meaningful.
+- The game is playable first.
+- The onchain layer creates signed, judged player records.
 - The contract judges player-authored story text and speedrun notes.
 - The leaderboard stores accepted, rank-eligible runs instead of blindly accepting every submit.
 - The public repo avoids shipping private Unity art while still exposing the web/onchain integration.

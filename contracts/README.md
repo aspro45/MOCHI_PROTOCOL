@@ -1,10 +1,10 @@
 # MochiProtocolAdjudicator
 
-GenLayer Intelligent Contract for the optional onchain layer of Mochi Protocol.
+GenLayer Intelligent Contract for Mochi Protocol player-signed records.
 
 ## Purpose
 
-The contract adjudicates three optional player records:
+The contract adjudicates three player record paths:
 
 1. Guardian Oath
 2. Final Decision

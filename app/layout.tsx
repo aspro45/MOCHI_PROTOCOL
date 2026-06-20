@@ -5,8 +5,8 @@ import type { ReactNode } from 'react';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Mochi Protocol | Robot Cat Metroidvania Demo',
-  description: 'Play the Mochi Protocol Unity WebGL demo and explore its optional GenLayer Intelligent Contract integration.',
+  title: 'Mochi Protocol | Robot Cat Metroidvania',
+  description: 'Play the Mochi Protocol Unity WebGL build and explore GenLayer Intelligent Contract records for oath, final decision, and weekly speedruns.',
   icons: {
     icon: [
       { url: '/site/mochi-face.png', type: 'image/png' },
