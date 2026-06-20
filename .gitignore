@@ -12,3 +12,5 @@ out/
 
 public/unity/Build/*
 !public/unity/Build/.gitkeep
+
+.vercel
