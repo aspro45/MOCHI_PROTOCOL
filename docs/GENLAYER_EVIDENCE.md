@@ -27,6 +27,8 @@ The contract demonstrates:
 - short reason
 - short title
 - rank eligibility for leaderboard entries
+- public player passport records
+- achievement flags derived from accepted judgments
 - deterministic validation around nondeterministic LLM output
 
 The contract never controls gameplay. It only adjudicates optional records after local gameplay has already happened.
@@ -115,6 +117,27 @@ Leaderboard behavior:
 - fastest completion time first
 - tie-breaker: higher score
 
+### 4. Mochi Player Passport
+
+The contract also exposes a public passport view for each player:
+
+```text
+get_public_player_passport(player)
+```
+
+The passport combines the accepted oath, accepted final decision, and best weekly run into one public identity record. It includes:
+
+- display name from the best ranked run
+- passport title such as `Core Guardian`, `Consensus Restorer`, or `Consensus Runner`
+- total accepted judgments
+- best week and best run time
+- achievement flags:
+  - `core_guardian`
+  - `boss_signal_restored`
+  - `consensus_runner`
+
+This makes the contract feel like a game-native onchain identity layer, not only a leaderboard table.
+
 ## Unity And Website Bridge
 
 ```text
@@ -160,7 +183,7 @@ npm run contract:test
 Expected result:
 
 ```text
-Ran 12 tests
+Ran 13 tests
 OK
 ```
 

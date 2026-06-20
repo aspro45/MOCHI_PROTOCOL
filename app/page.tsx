@@ -190,7 +190,7 @@ const passportSteps: PassportStep[] = [
 
 const asproEvidenceLinks: EvidenceLink[] = [
   {
-    label: 'MochiProtocolAdjudicator',
+    label: 'Mochi Protocol Adjudicator',
     href: 'https://explorer-bradbury.genlayer.com/tx/0x4118a69760990668a349d5471380ae9af4528a8446d56e20fd276a06894d55f6',
     description: 'Our Bradbury Intelligent Contract for Guardian Oath, Final Decision, and Weekly Speedrun judgments.',
     meta: 'CA 0x8808...1ed9 - Bradbury accepted',

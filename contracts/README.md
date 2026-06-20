@@ -10,7 +10,7 @@ The contract adjudicates three optional player records:
 2. Final Decision
 3. Weekly Speedrun
 
-It uses GenLayer LLM judgment for natural-language decisions and stores only accepted or useful results. Gameplay stays local.
+It uses GenLayer LLM judgment for natural-language decisions, stores accepted records, and builds a public Mochi Player Passport from those records. Gameplay stays local.
 
 ## Contract Address
 
@@ -85,6 +85,30 @@ Returns the best accepted run for one player and week.
 
 Returns the stored oath, final decision, and best weekly run for a player if available.
 
+### get_public_player_passport(player)
+
+Returns a public player identity record built from accepted submissions:
+
+```json
+{
+  "player": "0x...",
+  "exists": true,
+  "displayName": "aspro",
+  "passportTitle": "Consensus Runner",
+  "guardianOathAccepted": true,
+  "finalDecisionAccepted": true,
+  "hasRankedRun": true,
+  "totalAcceptedJudgments": 3,
+  "bestWeekId": "WEEK-01",
+  "bestCompletionTimeSeconds": "731.92",
+  "achievements": [
+    { "id": "core_guardian", "title": "Core Guardian", "unlocked": true },
+    { "id": "boss_signal_restored", "title": "Boss Signal Restored", "unlocked": true },
+    { "id": "consensus_runner", "title": "Consensus Runner", "unlocked": true }
+  ]
+}
+```
+
 ## Validation Rules
 
 The contract:
@@ -96,6 +120,8 @@ The contract:
 - rejects invalid LLM JSON
 - never compares full freeform LLM text
 - avoids floating point calldata for leaderboard timing
+- updates one best weekly run per player/week instead of ranking duplicate worse runs
+- stores public passport achievement flags from accepted records
 
 ## Local Tests
 
@@ -107,4 +133,11 @@ or from the repository root:
 
 ```bash
 npm run contract:test
+```
+
+Current expected result:
+
+```text
+Ran 13 tests
+OK
 ```

@@ -67,15 +67,34 @@ class WeeklyRunRecord:
     title: str
 
 
+@allow_storage
+@dataclass
+class PlayerPassportRecord:
+    player: str
+    displayName: str
+    passportTitle: str
+    guardianOathAccepted: bool
+    finalDecisionAccepted: bool
+    hasRankedRun: bool
+    coreGuardian: bool
+    bossSignalRestored: bool
+    consensusRunner: bool
+    totalAcceptedJudgments: u32
+    bestWeekId: str
+    bestCompletionTimeCentiseconds: u32
+    bestRunTitle: str
+
+
 class MochiProtocolAdjudicator(gl.Contract):
     schema_version: str
     guardian_oaths: TreeMap[str, GuardianOathRecord]
     final_decisions: TreeMap[str, FinalDecisionRecord]
     weekly_runs: DynArray[WeeklyRunRecord]
     player_best_weekly_runs: TreeMap[str, WeeklyRunRecord]
+    player_passports: TreeMap[str, PlayerPassportRecord]
 
     def __init__(self):
-        self.schema_version = "MochiProtocolAdjudicator/v1"
+        self.schema_version = "MochiProtocolAdjudicator/v2"
 
     @gl.public.write
     def submit_guardian_oath(self, oath_message: str) -> typing.Any:
@@ -112,6 +131,7 @@ class MochiProtocolAdjudicator(gl.Contract):
                 reason=result["reason"],
                 title=result["title"],
             )
+            self._refresh_player_passport(player)
         return result
 
     @gl.public.write
@@ -170,6 +190,7 @@ class MochiProtocolAdjudicator(gl.Contract):
                 reason=result["reason"],
                 title=result["title"],
             )
+            self._refresh_player_passport(player)
         return result
 
     @gl.public.write
@@ -232,6 +253,7 @@ class MochiProtocolAdjudicator(gl.Contract):
                     current_best = self.player_best_weekly_runs[best_key]
                     if self._is_better_run(record, current_best):
                         self.player_best_weekly_runs[best_key] = record
+            self._refresh_player_passport(player)
 
         return result
 
@@ -247,6 +269,8 @@ class MochiProtocolAdjudicator(gl.Contract):
                 "final_decision",
                 "weekly_speedrun",
                 "weekly_leaderboard",
+                "player_passport",
+                "passport_achievements",
             ],
         }
 
@@ -299,11 +323,49 @@ class MochiProtocolAdjudicator(gl.Contract):
                     best_runs.append(self._weekly_record_to_dict(record))
 
         best_runs.sort(key=lambda entry: entry["weekId"])
-        return {
+        record = {
             "player": clean_player,
             "guardianOath": oath,
             "finalDecision": final,
             "bestWeeklyRuns": best_runs,
+        }
+        if clean_player in self.player_passports:
+            record["passport"] = self._passport_record_to_dict(
+                self.player_passports[clean_player]
+            )
+        return record
+
+    @gl.public.view
+    def get_public_player_passport(self, player: str) -> typing.Any:
+        clean_player = self._clean_text(player, 128)
+        if clean_player not in self.player_passports:
+            return {
+                "player": clean_player,
+                "exists": False,
+                "passportTitle": "No Passport Yet",
+                "achievements": self._empty_achievement_list(),
+                "guardianOath": {},
+                "finalDecision": {},
+                "bestWeeklyRun": {},
+            }
+
+        passport = self.player_passports[clean_player]
+        return {
+            **self._passport_record_to_dict(passport),
+            "exists": True,
+            "guardianOath": self._oath_record_to_dict(self.guardian_oaths[clean_player])
+            if clean_player in self.guardian_oaths
+            else {},
+            "finalDecision": self._final_record_to_dict(
+                self.final_decisions[clean_player]
+            )
+            if clean_player in self.final_decisions
+            else {},
+            "bestWeeklyRun": self.get_player_best_run(
+                clean_player, passport.bestWeekId
+            )
+            if passport.bestWeekId != ""
+            else {},
         }
 
     def _judge_with_llm(
@@ -417,6 +479,152 @@ class MochiProtocolAdjudicator(gl.Contract):
         if include_rank_eligible and not isinstance(result.get("rankEligible"), bool):
             return False
         return True
+
+    def _refresh_player_passport(self, player: str):
+        oath = self.guardian_oaths[player] if player in self.guardian_oaths else None
+        final = (
+            self.final_decisions[player] if player in self.final_decisions else None
+        )
+        best_run = self._find_best_public_run(player)
+
+        guardian_oath_accepted = bool(oath is not None and oath.accepted)
+        final_decision_accepted = bool(final is not None and final.accepted)
+        has_ranked_run = bool(best_run is not None and best_run.rankEligible)
+        boss_signal_restored = bool(
+            final_decision_accepted
+            and final.scrapHoundDefeated
+            and final.reactorTitanDefeated
+        )
+        consensus_runner = bool(has_ranked_run and final_decision_accepted)
+
+        total = 0
+        if guardian_oath_accepted:
+            total += 1
+        if final_decision_accepted:
+            total += 1
+        if has_ranked_run:
+            total += 1
+
+        display_name = ""
+        best_week_id = ""
+        best_centiseconds = 0
+        best_run_title = ""
+        if best_run is not None:
+            display_name = best_run.playerName
+            best_week_id = best_run.weekId
+            best_centiseconds = int(best_run.completionTimeCentiseconds)
+            best_run_title = best_run.title
+
+        passport_title = "Mochi Initiate"
+        if guardian_oath_accepted:
+            passport_title = "Core Guardian"
+        if final_decision_accepted:
+            passport_title = "Consensus Restorer"
+        if consensus_runner:
+            passport_title = "Consensus Runner"
+
+        self.player_passports[player] = PlayerPassportRecord(
+            player=player,
+            displayName=display_name,
+            passportTitle=passport_title,
+            guardianOathAccepted=guardian_oath_accepted,
+            finalDecisionAccepted=final_decision_accepted,
+            hasRankedRun=has_ranked_run,
+            coreGuardian=guardian_oath_accepted,
+            bossSignalRestored=boss_signal_restored,
+            consensusRunner=consensus_runner,
+            totalAcceptedJudgments=u32(total),
+            bestWeekId=best_week_id,
+            bestCompletionTimeCentiseconds=u32(best_centiseconds),
+            bestRunTitle=best_run_title,
+        )
+
+    def _find_best_public_run(self, player: str) -> typing.Any:
+        best = None
+        for record in self.weekly_runs:
+            if not (
+                record.player == player
+                and record.accepted
+                and record.rankEligible
+            ):
+                continue
+            best_key = self._best_run_key(record.player, record.weekId)
+            if (
+                best_key not in self.player_best_weekly_runs
+                or not self._same_ranked_run(
+                    record, self.player_best_weekly_runs[best_key]
+                )
+            ):
+                continue
+            if best is None or self._is_better_run(record, best):
+                best = record
+        return best
+
+    def _passport_record_to_dict(self, record: PlayerPassportRecord) -> typing.Any:
+        return {
+            "player": record.player,
+            "displayName": record.displayName,
+            "passportTitle": record.passportTitle,
+            "guardianOathAccepted": record.guardianOathAccepted,
+            "finalDecisionAccepted": record.finalDecisionAccepted,
+            "hasRankedRun": record.hasRankedRun,
+            "totalAcceptedJudgments": int(record.totalAcceptedJudgments),
+            "bestWeekId": record.bestWeekId,
+            "bestCompletionTimeSeconds": self._centiseconds_to_seconds_text(
+                record.bestCompletionTimeCentiseconds
+            )
+            if int(record.bestCompletionTimeCentiseconds) > 0
+            else "",
+            "bestCompletionTimeCentiseconds": int(
+                record.bestCompletionTimeCentiseconds
+            ),
+            "bestRunTitle": record.bestRunTitle,
+            "achievements": self._achievement_list(record),
+        }
+
+    def _achievement_list(self, record: PlayerPassportRecord) -> typing.Any:
+        return [
+            {
+                "id": "core_guardian",
+                "title": "Core Guardian",
+                "unlocked": record.coreGuardian,
+                "description": "Accepted Guardian Oath.",
+            },
+            {
+                "id": "boss_signal_restored",
+                "title": "Boss Signal Restored",
+                "unlocked": record.bossSignalRestored,
+                "description": "Accepted final decision after both boss signals.",
+            },
+            {
+                "id": "consensus_runner",
+                "title": "Consensus Runner",
+                "unlocked": record.consensusRunner,
+                "description": "Rank-eligible weekly run with final restoration.",
+            },
+        ]
+
+    def _empty_achievement_list(self) -> typing.Any:
+        return [
+            {
+                "id": "core_guardian",
+                "title": "Core Guardian",
+                "unlocked": False,
+                "description": "Accepted Guardian Oath.",
+            },
+            {
+                "id": "boss_signal_restored",
+                "title": "Boss Signal Restored",
+                "unlocked": False,
+                "description": "Accepted final decision after both boss signals.",
+            },
+            {
+                "id": "consensus_runner",
+                "title": "Consensus Runner",
+                "unlocked": False,
+                "description": "Rank-eligible weekly run with final restoration.",
+            },
+        ]
 
     def _reject(self, category: str, reason: str, title: str) -> typing.Any:
         return {

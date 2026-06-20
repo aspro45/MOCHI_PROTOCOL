@@ -174,6 +174,7 @@ def _make_contract(sender="studio_sender"):
     contract.final_decisions = FakeTreeMap()
     contract.weekly_runs = FakeDynArray()
     contract.player_best_weekly_runs = FakeTreeMap()
+    contract.player_passports = FakeTreeMap()
     return contract
 
 
@@ -251,6 +252,8 @@ class MochiProtocolAdjudicatorTests(unittest.TestCase):
         self.assertIn("final_decision", result["features"])
         self.assertIn("weekly_speedrun", result["features"])
         self.assertIn("weekly_leaderboard", result["features"])
+        self.assertIn("player_passport", result["features"])
+        self.assertIn("passport_achievements", result["features"])
 
     def test_02_guardian_oath_rejected_nonsense(self):
         contract = _make_contract()
@@ -449,6 +452,38 @@ class MochiProtocolAdjudicatorTests(unittest.TestCase):
         self.assertEqual(len(record["bestWeeklyRuns"]), 1)
         self.assertEqual(record["bestWeeklyRuns"][0]["completionTimeCentiseconds"], 43000)
         self.assertEqual(record["bestWeeklyRuns"][0]["completionTimeSeconds"], "430.00")
+        self.assertEqual(record["passport"]["passportTitle"], "Consensus Runner")
+        self.assertEqual(record["passport"]["totalAcceptedJudgments"], 3)
+
+        passport = contract.get_public_player_passport("0xA")
+        self.assertTrue(passport["exists"])
+        self.assertEqual(passport["player"], "0xA")
+        self.assertEqual(passport["displayName"], "aspro")
+        self.assertEqual(passport["passportTitle"], "Consensus Runner")
+        self.assertTrue(passport["guardianOathAccepted"])
+        self.assertTrue(passport["finalDecisionAccepted"])
+        self.assertTrue(passport["hasRankedRun"])
+        self.assertEqual(passport["bestWeekId"], "2026-W25")
+        self.assertEqual(passport["bestCompletionTimeCentiseconds"], 43000)
+        self.assertEqual(passport["bestCompletionTimeSeconds"], "430.00")
+        self.assertEqual(passport["guardianOath"]["category"], "guardian_oath")
+        self.assertEqual(passport["finalDecision"]["category"], "final_decision")
+        self.assertEqual(passport["bestWeeklyRun"]["category"], "weekly_speedrun")
+        achievements = {entry["id"]: entry["unlocked"] for entry in passport["achievements"]}
+        self.assertTrue(achievements["core_guardian"])
+        self.assertTrue(achievements["boss_signal_restored"])
+        self.assertTrue(achievements["consensus_runner"])
+
+    def test_12_public_player_passport_empty(self):
+        contract = _make_contract()
+        passport = contract.get_public_player_passport("0xNOPE")
+        self.assertFalse(passport["exists"])
+        self.assertEqual(passport["player"], "0xNOPE")
+        self.assertEqual(passport["passportTitle"], "No Passport Yet")
+        self.assertEqual(passport["guardianOath"], {})
+        self.assertEqual(passport["finalDecision"], {})
+        self.assertEqual(passport["bestWeeklyRun"], {})
+        self.assertFalse(any(entry["unlocked"] for entry in passport["achievements"]))
 
 
 if __name__ == "__main__":
