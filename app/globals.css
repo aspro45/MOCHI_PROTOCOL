@@ -447,6 +447,32 @@ img {
   letter-spacing: 0.12em;
 }
 
+.endgame-debug-button {
+  position: absolute;
+  top: 58px;
+  right: 12px;
+  z-index: 4;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(176, 80, 255, 0.78);
+  background: rgba(18, 4, 30, 0.78);
+  color: #e3a7ff;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.endgame-debug-button:hover,
+.endgame-debug-button:focus-visible {
+  border-color: #c86cff;
+  background: rgba(176, 80, 255, 0.18);
+  outline: none;
+}
+
 .unity-frame:fullscreen {
   width: 100vw;
   height: 100dvh;
@@ -464,6 +490,11 @@ img {
 
 .unity-frame:fullscreen .fullscreen-button {
   top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+}
+
+.unity-frame:fullscreen .endgame-debug-button {
+  top: max(58px, calc(env(safe-area-inset-top) + 58px));
   right: max(12px, env(safe-area-inset-right));
 }
 
