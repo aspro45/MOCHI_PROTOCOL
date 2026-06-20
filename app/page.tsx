@@ -1165,8 +1165,8 @@ export default function GamePage() {
             <span>DEMO VIDEO SLOT</span>
             {demoVideoUrl ? (
               <div className="video-embed" aria-label="Mochi Protocol demo video">
-                <video controls playsInline preload="metadata" poster="/site/ability-room-bg.png">
-                  <source src={demoVideoUrl} />
+                <video autoPlay muted loop controls playsInline preload="auto" poster="/site/ability-room-bg.png">
+                  <source src={demoVideoUrl} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
