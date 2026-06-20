@@ -212,7 +212,10 @@ const asproEvidenceLinks: EvidenceLink[] = [
   },
 ];
 
-const demoVideoUrl = process.env.NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL?.trim() || '';
+const defaultDemoVideoUrl = 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/site/0323.mp4';
+const configuredDemoVideoUrl = process.env.NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL?.trim();
+const demoVideoUrl = configuredDemoVideoUrl || defaultDemoVideoUrl;
+const demoVideoSourceUrl = `${demoVideoUrl}${demoVideoUrl.includes('?') ? '&' : '?'}v=web-ready-20260620-0903`;
 const defaultLeaderboardWeekId = getCurrentWeekId();
 
 const defaultWeeklyRunForm: WeeklyRunForm = {
@@ -253,7 +256,7 @@ export default function GamePage() {
   const [unityRequested, setUnityRequested] = useState(false);
 
   useEffect(() => {
-    if (!demoVideoUrl) {
+    if (!demoVideoSourceUrl) {
       return undefined;
     }
 
@@ -271,6 +274,7 @@ export default function GamePage() {
       });
     };
 
+    video.load();
     playVideo();
     video.addEventListener('loadeddata', playVideo);
     video.addEventListener('canplay', playVideo);
@@ -1201,8 +1205,8 @@ export default function GamePage() {
               <div className="video-embed" aria-label="Mochi Protocol demo video">
                 <video
                   ref={demoVideoRef}
-                  key={demoVideoUrl}
-                  src={demoVideoUrl}
+                  key={demoVideoSourceUrl}
+                  src={demoVideoSourceUrl}
                   autoPlay
                   muted
                   loop
