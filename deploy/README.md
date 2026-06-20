@@ -23,7 +23,7 @@ Explorer: https://explorer-bradbury.genlayer.com/
 7. Set it in Vercel:
 
 ```text
-NEXT_PUBLIC_MOCHI_ADJUDICATOR_ADDRESS=0xYourBradburyContract
+NEXT_PUBLIC_MOCHI_ADJUDICATOR_ADDRESS=0x27607E65Ec5B0Db9a87bAfCc816E1C112ff48A41
 ```
 
 8. Redeploy the website.
@@ -40,6 +40,6 @@ NEXT_PUBLIC_MOCHI_ADJUDICATOR_ADDRESS=0xYourBradburyContract
 ## Current Deploy Evidence
 
 ```text
-Contract: 0x8808bfBABcE825FeADC6C287F1e8Fb3f58731ed9
-TX: https://explorer-bradbury.genlayer.com/tx/0x4118a69760990668a349d5471380ae9af4528a8446d56e20fd276a06894d55f6
+Contract: 0x27607E65Ec5B0Db9a87bAfCc816E1C112ff48A41
+TX: https://explorer-bradbury.genlayer.com/tx/0xb65357735bee1ca393dbe7553c9cd01d8f63cd1cee2b16addca2e7e9311add7e
 ```

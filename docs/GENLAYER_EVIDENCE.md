@@ -9,8 +9,8 @@ This document explains the onchain part of Mochi Protocol in the same clear styl
 | Contract | MochiProtocolAdjudicator |
 | Network | GenLayer Bradbury |
 | Chain ID | 4221 |
-| Address | `0x8808bfBABcE825FeADC6C287F1e8Fb3f58731ed9` |
-| Deploy TX | https://explorer-bradbury.genlayer.com/tx/0x4118a69760990668a349d5471380ae9af4528a8446d56e20fd276a06894d55f6 |
+| Address | `0x27607E65Ec5B0Db9a87bAfCc816E1C112ff48A41` |
+| Deploy TX | https://explorer-bradbury.genlayer.com/tx/0xb65357735bee1ca393dbe7553c9cd01d8f63cd1cee2b16addca2e7e9311add7e |
 | Source | `contracts/MochiProtocolAdjudicator.py` |
 | Tests | `contracts/test_mochi_protocol_adjudicator.py` |
 
