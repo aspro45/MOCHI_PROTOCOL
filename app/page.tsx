@@ -189,7 +189,7 @@ const asproEvidenceLinks: EvidenceLink[] = [
   {
     label: 'Mochi Protocol Adjudicator',
     href: 'https://explorer-bradbury.genlayer.com/tx/0xb65357735bee1ca393dbe7553c9cd01d8f63cd1cee2b16addca2e7e9311add7e',
-    description: 'Built by ASPRO for Guardian Oath, Final Decision, Weekly Speedrun, and Player Passport judgments.',
+    description: 'The live Bradbury contract for Guardian Oath, Final Decision, Weekly Speedrun, and Player Passport judgments.',
     meta: 'CA 0x2760...8A41 - Bradbury accepted',
     cta: 'Open deploy proof',
   },
@@ -1169,9 +1169,9 @@ export default function GamePage() {
 
         <div className="aspro-evidence-board">
           <div>
-            <span>BUILT BY ASPRO</span>
+            <span>MOCHI CONTRACT LAYER</span>
             <h3>MochiProtocolAdjudicator powers the GenLayer layer.</h3>
-            <p>ASPRO built this Bradbury Intelligent Contract for Mochi Protocol. It connects to the website and Unity bridge, judges player messages and run submissions, then returns accepted, score, category, title, and reason.</p>
+            <p>This Bradbury Intelligent Contract was crafted for Mochi Protocol. It connects to the website and Unity bridge, judges player messages and run submissions, then returns accepted, score, category, title, and reason.</p>
           </div>
           <div className="aspro-evidence-grid">
             {asproEvidenceLinks.map((link) => (

@@ -912,9 +912,12 @@ kbd {
 
 .proof-metric strong {
   color: var(--cyan);
-  font-family: var(--mono);
-  font-size: clamp(20px, 2.2vw, 28px);
-  letter-spacing: 0.04em;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(18px, 1.9vw, 24px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .proof-metric span {
@@ -1049,9 +1052,9 @@ kbd {
 .aspro-evidence-board span:first-child {
   color: var(--purple);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
 }
 
 .aspro-evidence-board h3 {
