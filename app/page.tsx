@@ -981,7 +981,7 @@ export default function GamePage() {
                 ref={playerNameInputRef}
                 value={weeklyRunForm.playerName}
                 onChange={(event) => setWeeklyRunForm((current) => ({ ...current, playerName: event.target.value.slice(0, 24) }))}
-                placeholder="aspro"
+                placeholder="your name"
                 maxLength={24}
                 autoComplete="nickname"
               />
