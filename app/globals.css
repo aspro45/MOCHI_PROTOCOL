@@ -1014,6 +1014,7 @@ kbd {
   position: relative;
   display: grid;
   place-items: center;
+  aspect-ratio: 16 / 9;
   min-height: 260px;
   padding: 22px;
   overflow: hidden;
@@ -1060,6 +1061,23 @@ kbd {
   margin: 8px 0 0;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.video-embed {
+  aspect-ratio: 16 / 9;
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid rgba(53, 241, 255, 0.28);
+  background: rgba(0, 0, 0, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(180, 92, 255, 0.12);
+}
+
+.video-embed video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  object-fit: cover;
 }
 
 .aspro-evidence-board {

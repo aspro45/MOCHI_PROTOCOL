@@ -212,6 +212,7 @@ const asproEvidenceLinks: EvidenceLink[] = [
   },
 ];
 
+const demoVideoUrl = process.env.NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL?.trim() || '';
 const defaultLeaderboardWeekId = getCurrentWeekId();
 
 const defaultWeeklyRunForm: WeeklyRunForm = {
@@ -1162,10 +1163,19 @@ export default function GamePage() {
 
           <article className="demo-video-panel">
             <span>DEMO VIDEO SLOT</span>
-            <div className="video-placeholder" aria-label="Reserved space for Mochi Protocol demo video">
-              <strong>16:9 gameplay capture</strong>
-              <p>Drop the trailer or walkthrough here when the video is ready.</p>
-            </div>
+            {demoVideoUrl ? (
+              <div className="video-embed" aria-label="Mochi Protocol demo video">
+                <video controls playsInline preload="metadata" poster="/site/ability-room-bg.png">
+                  <source src={demoVideoUrl} />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            ) : (
+              <div className="video-placeholder" aria-label="Reserved space for Mochi Protocol demo video">
+                <strong>16:9 gameplay capture</strong>
+                <p>Drop the trailer or walkthrough here when the video is ready.</p>
+              </div>
+            )}
             <p>
               Suggested flow: intro, movement, one trap room, one boss moment, final completion screen, then the GenLayer submit result.
             </p>
