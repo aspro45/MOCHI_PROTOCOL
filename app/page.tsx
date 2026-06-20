@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
@@ -85,9 +85,10 @@ const unityBuildBaseCandidates = uniqueUnityBuildBases([
 ]);
 const unityStreamingAssetsUrl = normalizeUnityBuildBase(process.env.NEXT_PUBLIC_UNITY_STREAMING_ASSETS_BASE || defaultUnityStreamingAssetsUrl);
 const unityBuildName = process.env.NEXT_PUBLIC_UNITY_BUILD_NAME || 'MochiProtocol';
-const defaultUnityBuildVersion = 'r2-under300-20260620-02';
+const defaultUnityBuildVersion = 'r2-completion-layout-20260620-01';
 const configuredUnityBuildVersion = process.env.NEXT_PUBLIC_UNITY_BUILD_VERSION?.trim();
-const unityBuildVersion = configuredUnityBuildVersion && configuredUnityBuildVersion !== 'premium-2048-source-20260619-01'
+const staleUnityBuildVersions = new Set(['premium-2048-source-20260619-01', 'r2-under300-20260620-02']);
+const unityBuildVersion = configuredUnityBuildVersion && !staleUnityBuildVersions.has(configuredUnityBuildVersion)
   ? configuredUnityBuildVersion
   : defaultUnityBuildVersion;
 const connectionTimeoutMs = 45000;
