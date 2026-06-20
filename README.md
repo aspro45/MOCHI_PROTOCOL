@@ -8,13 +8,13 @@ Mochi is a tiny robot cat guardian inside a fractured Intelligent Layer. The val
 
 | Item | Link |
 |---|---|
-| Website | Vercel deployment connected to this repository |
-| Unity WebGL Build | Hosted externally on Cloudflare R2 because the `.data` file is too large for GitHub/Vercel limits |
+| Website | https://www.genmochi.xyz |
+| Unity WebGL Build | https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/Build |
 | Network | GenLayer Bradbury testnet, chain id `4221` |
 | Intelligent Contract | `MochiProtocolAdjudicator` at `0x27607E65Ec5B0Db9a87bAfCc816E1C112ff48A41` |
 | Deploy Evidence | https://explorer-bradbury.genlayer.com/tx/0xb65357735bee1ca393dbe7553c9cd01d8f63cd1cee2b16addca2e7e9311add7e |
-| Contract Source | `contracts/MochiProtocolAdjudicator.py` |
-| Contract Tests | `contracts/test_mochi_protocol_adjudicator.py` |
+| Contract Source | [contracts/MochiProtocolAdjudicator.py](contracts/MochiProtocolAdjudicator.py) |
+| Contract Tests | [contracts/test_mochi_protocol_adjudicator.py](contracts/test_mochi_protocol_adjudicator.py) |
 
 ## Why This Needs GenLayer
 
