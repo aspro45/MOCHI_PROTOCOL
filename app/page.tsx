@@ -213,9 +213,7 @@ const asproEvidenceLinks: EvidenceLink[] = [
 ];
 
 const defaultDemoVideoUrl = 'https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev/site/0323.mp4';
-const configuredDemoVideoUrl = process.env.NEXT_PUBLIC_MOCHI_DEMO_VIDEO_URL?.trim();
-const demoVideoUrl = configuredDemoVideoUrl || defaultDemoVideoUrl;
-const demoVideoSourceUrl = `${demoVideoUrl}${demoVideoUrl.includes('?') ? '&' : '?'}v=web-ready-20260620-0903`;
+const demoVideoSourceUrl = `${defaultDemoVideoUrl}?v=web-ready-20260620-0915`;
 const defaultLeaderboardWeekId = getCurrentWeekId();
 
 const defaultWeeklyRunForm: WeeklyRunForm = {
@@ -1201,7 +1199,7 @@ export default function GamePage() {
 
           <article className="demo-video-panel">
             <span>DEMO VIDEO SLOT</span>
-            {demoVideoUrl ? (
+            {demoVideoSourceUrl ? (
               <div className="video-embed" aria-label="Mochi Protocol demo video">
                 <video
                   ref={demoVideoRef}
