@@ -447,19 +447,8 @@ export default function GamePage() {
     const incomingDisplayName = normalizeLeaderboardDisplayName(runData.playerName);
     let displayName = websiteDisplayName || incomingDisplayName;
 
-    if (!isValidLeaderboardDisplayName(displayName) && typeof window !== 'undefined') {
-      const fallbackName = latestAddressRef.current ? shortAddress(latestAddressRef.current).replace(/\./g, '') : 'aspro';
-      const promptedName = normalizeLeaderboardDisplayName(
-        window.prompt('Choose leaderboard display name', fallbackName) || '',
-      );
-
-      if (isValidLeaderboardDisplayName(promptedName)) {
-        displayName = promptedName;
-      }
-    }
-
     if (!isValidLeaderboardDisplayName(displayName)) {
-      focusLeaderboardDisplayName('Choose the leaderboard display name first, then submit again.');
+      focusLeaderboardDisplayName('Enter a leaderboard display name on the website or in the demo complete screen, then submit again.');
       return null;
     }
 
