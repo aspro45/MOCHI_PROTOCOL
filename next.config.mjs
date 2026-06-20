@@ -17,7 +17,7 @@ const contentSecurityPolicy = [
   "child-src 'self' blob:",
   "frame-src 'self' https://verify.walletconnect.com https://verify.walletconnect.org https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com",
   "connect-src 'self' https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev https://*.r2.dev https://rpc-bradbury.genlayer.com https://studio.genlayer.com https://explorer-bradbury.genlayer.com https://*.walletconnect.com wss://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.org https://*.reown.com wss://*.reown.com https://pulse.walletconnect.org https://api.web3modal.org",
-  "media-src 'self' data: blob:",
+  "media-src 'self' data: blob: https://pub-8eeae0f71eed47c698ccbf03daeb9f6d.r2.dev https://*.r2.dev",
   "manifest-src 'self'",
 ].join('; ');
 
