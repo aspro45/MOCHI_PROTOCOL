@@ -305,6 +305,9 @@ img {
 .control-row,
 .boss-gallery article,
 .genlayer-grid article,
+.proof-metric,
+.passport-panel,
+.demo-video-panel,
 .local-rule,
 .links-section {
   border: 1px solid rgba(53, 241, 255, 0.24);
@@ -893,6 +896,172 @@ kbd {
   padding: 20px;
 }
 
+.proof-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.proof-metric {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 150px;
+  padding: 18px;
+}
+
+.proof-metric strong {
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: clamp(20px, 2.2vw, 28px);
+  letter-spacing: 0.04em;
+}
+
+.proof-metric span {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.proof-metric p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.proof-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(320px, 0.94fr);
+  gap: 16px;
+}
+
+.passport-panel,
+.demo-video-panel {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 22px;
+}
+
+.passport-panel > span,
+.demo-video-panel > span {
+  color: var(--purple);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.passport-panel h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(24px, 2.2vw, 32px);
+  line-height: 1.1;
+}
+
+.passport-panel > p,
+.demo-video-panel > p {
+  margin: 0;
+  color: #a8cbd4;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.passport-steps {
+  display: grid;
+  gap: 10px;
+}
+
+.passport-step {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 13px 14px;
+  border: 1px solid rgba(53, 241, 255, 0.18);
+  background: rgba(0, 8, 14, 0.54);
+}
+
+.passport-step strong {
+  color: var(--cyan);
+  font-size: 15px;
+}
+
+.passport-step p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.passport-step > span {
+  min-width: 92px;
+  padding: 7px 9px;
+  border: 1px solid rgba(53, 241, 255, 0.36);
+  background: rgba(53, 241, 255, 0.08);
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.video-placeholder {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(53, 241, 255, 0.28);
+  background:
+    linear-gradient(135deg, rgba(53, 241, 255, 0.14), transparent 42%),
+    linear-gradient(315deg, rgba(180, 92, 255, 0.18), transparent 52%),
+    rgba(0, 8, 14, 0.68);
+  text-align: center;
+}
+
+.video-placeholder::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(53, 241, 255, 0.18);
+  pointer-events: none;
+}
+
+.video-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 6px);
+}
+
+.video-placeholder strong,
+.video-placeholder p {
+  position: relative;
+  z-index: 1;
+}
+
+.video-placeholder strong {
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.video-placeholder p {
+  max-width: 340px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .aspro-evidence-board {
   display: grid;
   grid-template-columns: 0.86fr 1.14fr;
@@ -935,7 +1104,7 @@ kbd {
 
 .aspro-evidence-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -943,7 +1112,7 @@ kbd {
   display: grid;
   align-content: start;
   gap: 9px;
-  min-height: 0;
+  min-height: 210px;
   padding: 16px 18px;
   border: 1px solid rgba(53, 241, 255, 0.26);
   background: rgba(0, 8, 14, 0.66);
@@ -1069,6 +1238,10 @@ kbd {
   .controls-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .proof-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 860px) {
@@ -1086,6 +1259,8 @@ kbd {
   .tips-grid,
   .boss-section,
   .aspro-evidence-board,
+  .proof-showcase,
+  .aspro-evidence-grid,
   .genlayer-grid,
   .links-section {
     grid-template-columns: 1fr;
@@ -1145,6 +1320,20 @@ kbd {
 
   .aspro-evidence-grid {
     grid-template-columns: 1fr;
+  }
+
+  .proof-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .passport-step {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .passport-step > span {
+    width: max-content;
+    min-width: 0;
   }
 
   .leaderboard-toolbar,

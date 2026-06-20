@@ -52,6 +52,24 @@ type LinkItem = {
   href: string;
 };
 
+type ProofMetric = {
+  value: string;
+  label: string;
+  note: string;
+};
+
+type PassportStep = {
+  label: string;
+  status: string;
+  description: string;
+};
+
+type EvidenceLink = LinkItem & {
+  description: string;
+  meta: string;
+  cta: string;
+};
+
 type WeeklyRunForm = {
   completionTimeSeconds: string;
   weekId: string;
@@ -129,11 +147,68 @@ const genLayerLinks: LinkItem[] = [
   { label: 'Bradbury Explorer', href: 'https://explorer-bradbury.genlayer.com/' },
 ];
 
-const asproEvidenceLinks: (LinkItem & { description: string })[] = [
+const proofMetrics: ProofMetric[] = [
+  {
+    value: 'Bradbury',
+    label: 'Network',
+    note: 'The public deployment runs on GenLayer Bradbury.',
+  },
+  {
+    value: '3',
+    label: 'Judgment paths',
+    note: 'Guardian Oath, Final Decision, and Weekly Speedrun.',
+  },
+  {
+    value: 'JSON',
+    label: 'Decision output',
+    note: 'accepted, score, category, title, and reason.',
+  },
+  {
+    value: 'Best run',
+    label: 'Leaderboard rule',
+    note: 'A better accepted run updates the player record.',
+  },
+];
+
+const passportSteps: PassportStep[] = [
+  {
+    label: 'Guardian Oath',
+    status: 'JUDGED',
+    description: 'The contract checks if the oath fits Mochi restoring the Core and consensus.',
+  },
+  {
+    label: 'Final Decision',
+    status: 'VERIFIED',
+    description: 'The contract reads the boss and module flags plus the final restoration message.',
+  },
+  {
+    label: 'Weekly Run',
+    status: 'RANKED',
+    description: 'The contract accepts rank-eligible runs and keeps the best player record for the week.',
+  },
+];
+
+const asproEvidenceLinks: EvidenceLink[] = [
   {
     label: 'MochiProtocolAdjudicator',
     href: 'https://explorer-bradbury.genlayer.com/tx/0x4118a69760990668a349d5471380ae9af4528a8446d56e20fd276a06894d55f6',
     description: 'Our Bradbury Intelligent Contract for Guardian Oath, Final Decision, and Weekly Speedrun judgments.',
+    meta: 'CA 0x8808...1ed9 - Bradbury accepted',
+    cta: 'Open deploy proof',
+  },
+  {
+    label: 'Contract source',
+    href: 'https://github.com/aspro45/MOCHI_PROTOCOL/blob/main/contracts/MochiProtocolAdjudicator.py',
+    description: 'Public source for the Intelligent Contract used by the website integration.',
+    meta: 'Python contract - GenLayer',
+    cta: 'Open source',
+  },
+  {
+    label: 'Contract tests',
+    href: 'https://github.com/aspro45/MOCHI_PROTOCOL/blob/main/contracts/test_mochi_protocol_adjudicator.py',
+    description: 'Local contract validation for oath, final decision, weekly runs, and leaderboard sorting.',
+    meta: '12 checks - structured fields',
+    cta: 'Open tests',
   },
 ];
 
@@ -1055,6 +1130,48 @@ export default function GamePage() {
           </article>
         </div>
 
+        <div className="proof-metrics-grid" aria-label="Live GenLayer proof metrics">
+          {proofMetrics.map((metric) => (
+            <article className="proof-metric" key={metric.label}>
+              <strong>{metric.value}</strong>
+              <span>{metric.label}</span>
+              <p>{metric.note}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="proof-showcase">
+          <article className="passport-panel">
+            <span>MOCHI RESTORATION PASSPORT</span>
+            <h3>One player path from story oath to ranked run.</h3>
+            <p>
+              The passport idea is simple: the game stays playable first, and every onchain submit becomes a readable player proof when the user chooses to sign it.
+            </p>
+            <div className="passport-steps">
+              {passportSteps.map((step) => (
+                <div className="passport-step" key={step.label}>
+                  <div>
+                    <strong>{step.label}</strong>
+                    <p>{step.description}</p>
+                  </div>
+                  <span>{step.status}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="demo-video-panel">
+            <span>DEMO VIDEO SLOT</span>
+            <div className="video-placeholder" aria-label="Reserved space for Mochi Protocol demo video">
+              <strong>16:9 gameplay capture</strong>
+              <p>Drop the trailer or walkthrough here when the video is ready.</p>
+            </div>
+            <p>
+              Suggested flow: intro, movement, one trap room, one boss moment, final completion screen, then the GenLayer submit result.
+            </p>
+          </article>
+        </div>
+
         <div className="aspro-evidence-board">
           <div>
             <span>ASPRO ONCHAIN CONTRACT</span>
@@ -1066,8 +1183,8 @@ export default function GamePage() {
               <a href={link.href} target="_blank" rel="noreferrer" key={link.href}>
                 <strong>{link.label}</strong>
                 <span>{link.description}</span>
-                <span className="evidence-meta">CA 0x8808...1ed9 - Bradbury accepted</span>
-                <small>Open Bradbury deploy</small>
+                <span className="evidence-meta">{link.meta}</span>
+                <small>{link.cta}</small>
               </a>
             ))}
           </div>
