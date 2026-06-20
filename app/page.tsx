@@ -229,6 +229,7 @@ const defaultWeeklyRunForm: WeeklyRunForm = {
 
 export default function GamePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const demoVideoRef = useRef<HTMLVideoElement | null>(null);
   const unityFrameRef = useRef<HTMLElement | null>(null);
   const playerNameInputRef = useRef<HTMLInputElement | null>(null);
   const latestAddressRef = useRef<string | undefined>(undefined);
@@ -250,6 +251,39 @@ export default function GamePage() {
   const [weeklyRunResult, setWeeklyRunResult] = useState<string | null>(null);
   const [isGameFullscreen, setIsGameFullscreen] = useState(false);
   const [unityRequested, setUnityRequested] = useState(false);
+
+  useEffect(() => {
+    if (!demoVideoUrl) {
+      return undefined;
+    }
+
+    const video = demoVideoRef.current;
+    if (!video) {
+      return undefined;
+    }
+
+    const playVideo = () => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.loop = true;
+      video.play().catch(() => {
+        // Browser may still wait for the first user gesture.
+      });
+    };
+
+    playVideo();
+    video.addEventListener('loadeddata', playVideo);
+    video.addEventListener('canplay', playVideo);
+    window.addEventListener('pointerdown', playVideo, { once: true });
+    window.addEventListener('keydown', playVideo, { once: true });
+
+    return () => {
+      video.removeEventListener('loadeddata', playVideo);
+      video.removeEventListener('canplay', playVideo);
+      window.removeEventListener('pointerdown', playVideo);
+      window.removeEventListener('keydown', playVideo);
+    };
+  }, []);
 
   useEffect(() => {
     const savedDisplayName = readSavedLeaderboardDisplayName();
@@ -1165,8 +1199,17 @@ export default function GamePage() {
             <span>DEMO VIDEO SLOT</span>
             {demoVideoUrl ? (
               <div className="video-embed" aria-label="Mochi Protocol demo video">
-                <video autoPlay muted loop controls playsInline preload="auto" poster="/site/ability-room-bg.png">
-                  <source src={demoVideoUrl} type="video/mp4" />
+                <video
+                  ref={demoVideoRef}
+                  key={demoVideoUrl}
+                  src={demoVideoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  controls
+                  playsInline
+                  preload="auto"
+                >
                   Your browser does not support the video tag.
                 </video>
               </div>
