@@ -677,7 +677,8 @@ export default function GamePage() {
   }, [mochiOnchainApi]);
 
   useEffect(() => {
-    if (!enableBrowserEndgameDebug) {
+    const urlDebugEnabled = new URLSearchParams(window.location.search).get('debugEndgame') === '1';
+    if (!enableBrowserEndgameDebug && !urlDebugEnabled) {
       delete window.mochiDebugFinalDecision;
       return;
     }
