@@ -89,7 +89,6 @@ declare global {
       config: UnityCreateConfig,
       onProgress?: (progress: number) => void,
     ) => Promise<UnityInstance>;
-    mochiDebugFinalDecision?: () => boolean;
   }
 }
 
@@ -110,10 +109,8 @@ const unityBuildVersion = configuredUnityBuildVersion && !staleUnityBuildVersion
   ? configuredUnityBuildVersion
   : defaultUnityBuildVersion;
 const connectionTimeoutMs = 45000;
-const endGameFlowObjectName = 'Mochi_EndGameFlow';
 const leaderboardDisplayNameStorageKey = 'mochiProtocol.leaderboardDisplayName';
 const mochiLeaderboardSeasonStartUtc = Date.UTC(2026, 5, 19);
-const enableBrowserEndgameDebug = process.env.NODE_ENV !== 'production';
 
 const heroStats: StatBlock[] = [
   { value: 'Unity 2D', label: 'local gameplay' },
@@ -252,7 +249,6 @@ export default function GamePage() {
   const [weeklyRunResult, setWeeklyRunResult] = useState<string | null>(null);
   const [isGameFullscreen, setIsGameFullscreen] = useState(false);
   const [unityRequested, setUnityRequested] = useState(false);
-  const [browserEndgameDebugEnabled, setBrowserEndgameDebugEnabled] = useState(false);
 
   useEffect(() => {
     if (!demoVideoSourceUrl) {
@@ -672,54 +668,10 @@ export default function GamePage() {
     setBridgeStatus('Starting Mochi Protocol...');
   }, [unityStatus]);
 
-  const triggerFinalDecisionDebug = useCallback(() => {
-    const instance = getUnityInstance();
-    if (!instance) {
-      setBridgeStatus('Unity is still loading. Try OPEN ENDGAME again after the game appears.');
-      return false;
-    }
-
-    instance.SendMessage(endGameFlowObjectName, 'DebugShowFinalDecisionPanel');
-    setBridgeStatus('Debug final decision panel opened.');
-    canvasRef.current?.focus();
-    return true;
-  }, []);
-
   useEffect(() => {
     installMochiOnchainGlobals(mochiOnchainApi);
     return () => clearMochiOnchainGlobals(mochiOnchainApi);
   }, [mochiOnchainApi]);
-
-  useEffect(() => {
-    setBrowserEndgameDebugEnabled(new URLSearchParams(window.location.search).get('debugEndgame') === '1');
-  }, []);
-
-  useEffect(() => {
-    if (!enableBrowserEndgameDebug && !browserEndgameDebugEnabled) {
-      delete window.mochiDebugFinalDecision;
-      return;
-    }
-
-    window.mochiDebugFinalDecision = triggerFinalDecisionDebug;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'F10' && event.code !== 'F10') {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-      triggerFinalDecisionDebug();
-    };
-
-    window.addEventListener('keydown', handleKeyDown, true);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown, true);
-      if (window.mochiDebugFinalDecision === triggerFinalDecisionDebug) {
-        delete window.mochiDebugFinalDecision;
-      }
-    };
-  }, [browserEndgameDebugEnabled, triggerFinalDecisionDebug]);
 
   useEffect(() => {
     let cancelled = false;
@@ -902,11 +854,6 @@ export default function GamePage() {
             <span aria-hidden="true">{isGameFullscreen ? 'EXIT' : 'FULL'}</span>
             <small>{isGameFullscreen ? 'SCREEN' : 'SCREEN'}</small>
           </button>
-          {browserEndgameDebugEnabled ? (
-            <button className="endgame-debug-button" type="button" onClick={triggerFinalDecisionDebug}>
-              OPEN ENDGAME
-            </button>
-          ) : null}
           {unityStatus !== 'ready' ? (
             <div className="unity-message">
               <div className="unity-message-inner">
