@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+.git/
+.codex-logs/
+.playwright-cli/
+
+.env
+.env.local
+.env.*.local
+
+public/unity/Build/*
+!public/unity/Build/.gitkeep
